@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bokamoso Glen | Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --grad-1: #000000;
+    --grad-2: #041004;
+    --grad-3: #082008;
+    --accent: #22c55e;
+    --accent-2: #4ade80;
+    --accent-dark: #15803d;
+    --text: #f0fdf4;
+    --muted: #86efac;
+    --card-bg: rgba(34,197,94,0.04);
+    --border: rgba(34,197,94,0.18);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: linear-gradient(160deg, var(--grad-1) 0%, var(--grad-2) 40%, var(--grad-3) 100%);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 4rem;
+    backdrop-filter: blur(18px);
+    background: rgba(0,0,0,0.75);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.25s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -20%; right: -5%;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -20%; left: 10%;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74,222,128,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+    background: rgba(34,197,94,0.07);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 .gradient-text {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+
+  .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.85rem 2rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #000;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(34,197,94,0.3); }
+
+  .btn-ghost {
+    display: inline-block;
+    padding: 0.85rem 2rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .btn-ghost:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  section { padding: 6rem 4rem; }
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 3rem;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-visual { position: relative; display: flex; justify-content: center; padding-top: 1rem; }
+
+  .avatar-ring {
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    padding: 3px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 50px rgba(34,197,94,0.18);
+  }
+
+  .avatar-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #020802, #041004);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    color: var(--accent);
+  }
+
+  .about-text p {
+    color: var(--muted);
+    line-height: 1.9;
+    font-size: 1rem;
+    font-weight: 300;
+    margin-bottom: 1.25rem;
+  }
+
+  /* SKILLS HEADING */
+  .skills-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: 0.01em;
+  }
+  .skills-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.6;
+  }
+
+  .skills-list { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+  .skill-pill {
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(34,197,94,0.3);
+    font-size: 0.82rem;
+    color: var(--accent-2);
+    background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(74,222,128,0.03));
+    backdrop-filter: blur(8px);
+    font-weight: 400;
+    transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+  .skill-pill:hover {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(74,222,128,0.1));
+    color: #fff;
+    box-shadow: 0 0 14px rgba(34,197,94,0.22);
+  }
+
+  /* PROJECTS */
+  .projects { background: rgba(0,15,0,0.35); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    backdrop-filter: blur(12px);
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .project-card:hover { transform: translateY(-6px); border-color: rgba(34,197,94,0.45); box-shadow: 0 12px 35px rgba(34,197,94,0.1); }
+  .project-card:hover::before { opacity: 1; }
+
+  .project-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(74,222,128,0.07));
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    color: var(--text);
+  }
+
+  .project-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+  .project-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(34,197,94,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(34,197,94,0.22);
+  }
+
+  .project-link {
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* CONTACT */
+  .contact-box { max-width: 600px; margin: 0 auto; text-align: center; }
+  .contact-box .section-label,
+  .contact-box .section-title { text-align: center; }
+  .contact-box p {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+
+  .social-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    backdrop-filter: blur(8px);
+    transition: color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .social-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 18px rgba(34,197,94,0.15);
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 4rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.25rem; }
+    .hero { padding: 7rem 1.5rem 3rem; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .avatar-ring { width: 180px; height: 180px; }
+    .avatar-inner { font-size: 3.5rem; }
+    footer { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Bokamoso Glen</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="tag">Available for work</div>
+  <h1>Creative <span class="gradient-text">Developer</span><br />& Designer</h1>
+  <p>I craft beautiful digital experiences at the intersection of design and technology. Turning ideas into elegant, functional products.</p>
+  <div class="cta-group">
+    <a href="#projects" class="btn-primary">View My Work</a>
+    <a href="#contact" class="btn-ghost">Get In Touch</a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <div class="avatar-ring">
+        <div class="avatar-inner">BG</div>
+      </div>
+    </div>
+    <div class="reveal">
+      <p class="section-label">About Me</p>
+      <h2 class="section-title">Hello, I'm Glen</h2>
+      <p>I'm a full-stack developer and UI/UX designer based in Witbank, with a passion for building products that are as beautiful as they are functional.</p>
+      <p>As a freelancer I've worked with startups and enterprises alike — turning complex problems into clean, intuitive solutions.</p>
+
+      <div class="skills-heading">⚡ Skills</div>
+      <div class="skills-list">
+        <span class="skill-pill">React & JavaScript</span>
+        <span class="skill-pill">Java & Kotlin</span>
+        <span class="skill-pill">HTML, CSS & Web Fundamentals</span>
+        <span class="skill-pill">Databases: MySQL, SQL/NoSQL</span>
+        <span class="skill-pill">System Design & Client-Server Architecture</span>
+        <span class="skill-pill">HTTP, REST APIs & WebSockets</span>
+        <span class="skill-pill">Application & Web Security</span>
+        <span class="skill-pill">Operating Systems: Concurrency, Memory, Processes</span>
+        <span class="skill-pill">Git, CI/CD & Deployment</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="projects">
+  <div class="reveal">
+    <p class="section-label">Selected Work</p>
+    <h2 class="section-title">Recent Projects</h2>
+  </div>
+  <div class="projects-grid">
+    <a href="project1-collab.html" class="project-card reveal">
+      <div class="project-icon">🤝</div>
+      <h3>CollabEdit</h3>
+      <p>A Google Docs–style real-time editor where multiple users edit simultaneously with live cursors, WebSocket sync, and conflict resolution.</p>
+      <div class="project-tags">
+        <span class="project-tag">React</span>
+        <span class="project-tag">WebSockets</span>
+        <span class="project-tag">MongoDB</span>
+      </div>
+      <div class="project-link">View Project →</div>
+    </a>
+    <a href="project2-ecommerce.html" class="project-card reveal">
+      <div class="project-icon">🔒</div>
+      <h3>SecureShop</h3>
+      <p>A production-grade e-commerce platform built with Java/Kotlin featuring JWT auth, secure Stripe payments, and CI/CD deployment.</p>
+      <div class="project-tags">
+        <span class="project-tag">Java/Kotlin</span>
+        <span class="project-tag">REST APIs</span>
+        <span class="project-tag">Stripe</span>
+      </div>
+      <div class="project-link">View Project →</div>
+    </a>
+    <a href="project3-devops.html" class="project-card reveal">
+      <div class="project-icon">📊</div>
+      <h3>DevPulse</h3>
+      <p>A real-time DevOps dashboard tracking deployments, system health, and logs — bridging development and operations seamlessly.</p>
+      <div class="project-tags">
+        <span class="project-tag">React</span>
+        <span class="project-tag">Java/Kotlin</span>
+        <span class="project-tag">CI/CD</span>
+      </div>
+      <div class="project-link">View Project →</div>
+    </a>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-box reveal">
+    <p class="section-label">Let's Talk</p>
+    <h2 class="section-title">Get In Touch</h2>
+    <p>Have a project in mind or just want to say hello? I'd love to hear from you. Reach out through any of the channels below.</p>
+    <div class="social-links">
+      <a href="mailto:bokamosoglen2@gmail.com" class="social-btn"><span>✉</span> Email Me</a>
+      <a href="https://www.linkedin.com/in/bokamoso-nchabeleng-ab195631a" class="social-btn"><span>💼</span> LinkedIn</a>
+      <a href="https://github.com/bokamosoglen" class="social-btn"><span>🐙</span> GitHub</a>
+      <a href="https://wa.me/27714662200" target="_blank" class="social-btn"><span>💬</span> WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Bokamoso_Glen — Designed & Built by Glen_Tech</p>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
