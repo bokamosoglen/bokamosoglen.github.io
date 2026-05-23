@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SecureShop — Secure E-Commerce Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#030804;
+  --surface:#06110a;
+  --surface2:#0a1a10;
+  --green:#16a34a;
+  --green2:#22c55e;
+  --green3:#4ade80;
+  --green4:#86efac;
+  --text:#f0fdf4;
+  --muted:#6b7280;
+  --border:rgba(22,163,74,0.2);
+  --glow:rgba(34,197,94,0.1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse 100% 80% at 50% -10%,rgba(22,163,74,0.08) 0%,transparent 60%);}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 3rem;background:rgba(3,8,4,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-brand{display:flex;align-items:center;gap:0.6rem;font-weight:800;font-size:1.2rem;letter-spacing:-0.02em;}
+.brand-icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--green),var(--green3));display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.85rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--green3);}
+.nav-secure{display:flex;align-items:center;gap:0.4rem;font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--green2);border:1px solid var(--border);padding:0.3rem 0.8rem;border-radius:4px;background:rgba(22,163,74,0.06);}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;padding:8rem 3rem 4rem;}
+.hero-content{}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--green2);border:1px solid var(--border);padding:0.4rem 1rem;border-radius:4px;background:rgba(34,197,94,0.06);margin-bottom:2rem;letter-spacing:0.08em;}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green2);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.2);}}
+.hero h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:1.5rem;}
+.hero h1 .accent{color:var(--green3);display:block;}
+.hero-desc{font-size:1rem;color:var(--muted);line-height:1.8;font-weight:400;margin-bottom:2.5rem;max-width:440px;}
+.hero-stats{display:flex;gap:2rem;margin-bottom:2.5rem;}
+.stat{}
+.stat-num{font-size:2rem;font-weight:800;color:var(--green3);line-height:1;}
+.stat-label{font-size:0.78rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.06em;margin-top:0.25rem;}
+.hero-actions{display:flex;gap:1rem;}
+.btn-primary{padding:0.9rem 2rem;border-radius:6px;background:linear-gradient(135deg,var(--green),var(--green3));color:#000;font-weight:700;font-size:0.9rem;border:none;cursor:pointer;text-decoration:none;display:inline-block;font-family:'Syne',sans-serif;letter-spacing:0.02em;transition:transform 0.2s,box-shadow 0.2s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(34,197,94,0.3);}
+.btn-secondary{padding:0.9rem 2rem;border-radius:6px;border:1px solid var(--border);color:var(--green4);font-size:0.9rem;font-weight:600;text-decoration:none;display:inline-block;transition:border-color 0.2s,background 0.2s;}
+.btn-secondary:hover{border-color:var(--green2);background:rgba(34,197,94,0.05);}
+
+/* STORE MOCKUP */
+.store-mockup{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.6),0 0 40px rgba(34,197,94,0.05);}
+.store-bar{background:#040c06;padding:0.9rem 1.25rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--border);}
+.store-dots{display:flex;gap:0.45rem;}
+.dot{width:11px;height:11px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.y{background:#febc2e;}.dot.g{background:#28c840;}
+.store-url{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:0.3rem 0.75rem;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:0.4rem;}
+.lock-icon{color:var(--green2);font-size:0.8rem;}
+.store-nav-bar{padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:#050f07;}
+.store-nav-brand{font-size:0.9rem;font-weight:800;color:var(--green3);}
+.store-nav-links{display:flex;gap:1rem;}
+.snl{font-size:0.72rem;color:var(--muted);}
+.store-nav-cart{font-size:0.75rem;color:var(--green2);font-family:'DM Mono',monospace;}
+.products-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;padding:1rem;}
+.product-card{background:#040c06;border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s;}
+.product-card:hover{border-color:rgba(34,197,94,0.4);}
+.product-img{height:80px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,rgba(34,197,94,0.06),rgba(74,222,128,0.03));}
+.product-info{padding:0.6rem;}
+.product-name{font-size:0.78rem;font-weight:700;margin-bottom:0.2rem;}
+.product-price{font-size:0.72rem;color:var(--green3);font-family:'DM Mono',monospace;}
+.product-btn{width:100%;margin-top:0.5rem;padding:0.35rem;border-radius:4px;background:rgba(34,197,94,0.12);border:1px solid var(--border);color:var(--green3);font-size:0.7rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;transition:background 0.2s;}
+.product-btn:hover{background:rgba(34,197,94,0.2);}
+.checkout-bar{padding:0.75rem 1rem;background:#040c06;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.checkout-total{font-size:0.8rem;color:var(--text);font-family:'DM Mono',monospace;}
+.checkout-btn{padding:0.4rem 1rem;border-radius:4px;background:linear-gradient(135deg,var(--green),var(--green3));color:#000;font-size:0.75rem;font-weight:700;border:none;cursor:pointer;font-family:'Syne',sans-serif;}
+
+/* SECURITY */
+.security{padding:5rem 3rem;background:var(--surface);border-top:1px solid var(--border);}
+.security-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;max-width:1100px;margin:0 auto;}
+.security-content h2{font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;}
+.security-content h2 em{font-style:normal;color:var(--green3);}
+.security-content p{color:var(--muted);line-height:1.8;font-weight:400;margin-bottom:2rem;}
+.security-list{list-style:none;display:flex;flex-direction:column;gap:0.75rem;}
+.security-list li{display:flex;align-items:center;gap:0.75rem;font-size:0.95rem;color:var(--green4);}
+.security-list li::before{content:'✓';color:var(--green2);font-weight:700;font-size:1rem;}
+.security-visual{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.sec-card{padding:1.25rem;background:#040c06;border:1px solid var(--border);border-radius:10px;text-align:center;}
+.sec-icon{font-size:2rem;margin-bottom:0.5rem;}
+.sec-card h4{font-size:0.85rem;font-weight:700;color:var(--green3);margin-bottom:0.25rem;}
+.sec-card p{font-size:0.75rem;color:var(--muted);line-height:1.5;}
+
+/* TECH */
+.tech{padding:4rem 3rem;border-top:1px solid var(--border);}
+.tech-label{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--green2);letter-spacing:0.12em;text-transform:uppercase;text-align:center;margin-bottom:2rem;}
+.tech-row{display:flex;flex-wrap:wrap;justify-content:center;gap:0.75rem;}
+.tech-tag{padding:0.5rem 1.1rem;border-radius:4px;border:1px solid var(--border);background:rgba(22,163,74,0.05);color:var(--green4);font-family:'DM Mono',monospace;font-size:0.82rem;transition:border-color 0.2s,background 0.2s;}
+.tech-tag:hover{border-color:var(--green2);background:rgba(34,197,94,0.1);}
+
+/* CONTACT */
+.contact{padding:5rem 3rem;text-align:center;background:var(--surface);border-top:1px solid var(--border);}
+.contact h2{font-size:2.5rem;font-weight:800;margin-bottom:1rem;letter-spacing:-0.02em;}
+.contact p{color:var(--muted);margin-bottom:2rem;}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.clink{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:6px;border:1px solid var(--border);color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:600;transition:color 0.2s,border-color 0.2s,box-shadow 0.2s;}
+.clink:hover{color:var(--green3);border-color:var(--green2);box-shadow:0 0 16px rgba(34,197,94,0.12);}
+
+footer{padding:2rem 3rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;color:var(--muted);}
+footer a{color:var(--green3);text-decoration:none;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand"><div class="brand-icon">🔒</div>SecureShop</div>
+  <ul class="nav-links">
+    <li><a href="#store">Store</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#tech">Stack</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-secure">🔒 SSL Secured</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><div class="badge-dot"></div>PROJECT 02 — E-COMMERCE</div>
+    <h1>Commerce,<br/><span class="accent">Secured.</span></h1>
+    <p class="hero-desc">A full-stack online store built with Java/Kotlin, featuring JWT authentication, secure payments, CI/CD deployment, and production-grade application security.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">256</div><div class="stat-label">BIT ENCRYPTION</div></div>
+      <div class="stat"><div class="stat-num">99.9</div><div class="stat-label">% UPTIME SLA</div></div>
+      <div class="stat"><div class="stat-num">&lt;80</div><div class="stat-label">MS API RESPONSE</div></div>
+    </div>
+    <div class="hero-actions">
+      <a href="#store" class="btn-primary">Browse Store</a>
+      <a href="#security" class="btn-secondary">Security Features</a>
+    </div>
+  </div>
+  <div class="store-mockup" id="store">
+    <div class="store-bar">
+      <div class="store-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+      <div class="store-url"><span class="lock-icon">🔒</span> secureshop.glen-tech.dev</div>
+    </div>
+    <div class="store-nav-bar">
+      <div class="store-nav-brand">SecureShop</div>
+      <div class="store-nav-links"><span class="snl">Home</span><span class="snl">Products</span><span class="snl">About</span></div>
+      <div class="store-nav-cart">🛒 Cart (2)</div>
+    </div>
+    <div class="products-grid">
+      <div class="product-card"><div class="product-img">💻</div><div class="product-info"><div class="product-name">Dev Laptop Pro</div><div class="product-price">R 24,999</div><button class="product-btn">Add to Cart</button></div></div>
+      <div class="product-card"><div class="product-img">🎧</div><div class="product-info"><div class="product-name">Studio Headphones</div><div class="product-price">R 3,499</div><button class="product-btn">Add to Cart</button></div></div>
+      <div class="product-card"><div class="product-img">⌨️</div><div class="product-info"><div class="product-name">Mech Keyboard</div><div class="product-price">R 1,899</div><button class="product-btn">Add to Cart</button></div></div>
+      <div class="product-card"><div class="product-img">🖱️</div><div class="product-info"><div class="product-name">Wireless Mouse</div><div class="product-price">R 799</div><button class="product-btn">Add to Cart</button></div></div>
+    </div>
+    <div class="checkout-bar">
+      <div class="checkout-total">Total: R 28,498.00</div>
+      <button class="checkout-btn">Secure Checkout →</button>
+    </div>
+  </div>
+</section>
+
+<section class="security" id="security">
+  <div class="security-grid">
+    <div class="security-content">
+      <h2>Security <em>First</em></h2>
+      <p>Every layer of this platform is built with application security as the primary concern — not an afterthought.</p>
+      <ul class="security-list">
+        <li>JWT Bearer token authentication</li>
+        <li>bcrypt password hashing (cost factor 12)</li>
+        <li>SQL injection prevention via parameterized queries</li>
+        <li>HTTPS enforced with HSTS headers</li>
+        <li>Rate limiting on all API endpoints</li>
+        <li>CSRF protection on state-changing requests</li>
+        <li>PCI-DSS compliant payment handling via Stripe</li>
+      </ul>
+    </div>
+    <div class="security-visual">
+      <div class="sec-card"><div class="sec-icon">🔑</div><h4>JWT Auth</h4><p>Stateless token-based authentication with refresh token rotation</p></div>
+      <div class="sec-card"><div class="sec-icon">🛡️</div><h4>WAF Rules</h4><p>Web application firewall blocking common attack vectors</p></div>
+      <div class="sec-card"><div class="sec-icon">💳</div><h4>Stripe</h4><p>Tokenized payment processing — card data never touches our servers</p></div>
+      <div class="sec-card"><div class="sec-icon">🔁</div><h4>CI/CD</h4><p>Automated testing and security scanning on every deployment</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="tech" id="tech">
+  <div class="tech-label">// Technology Stack</div>
+  <div class="tech-row">
+    <div class="tech-tag">React</div>
+    <div class="tech-tag">Java / Spring Boot</div>
+    <div class="tech-tag">Kotlin</div>
+    <div class="tech-tag">REST APIs</div>
+    <div class="tech-tag">MySQL</div>
+    <div class="tech-tag">JWT Auth</div>
+    <div class="tech-tag">Stripe</div>
+    <div class="tech-tag">Docker</div>
+    <div class="tech-tag">GitHub Actions CI/CD</div>
+    <div class="tech-tag">HTTPS / TLS</div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <h2>Work With Glen</h2>
+  <p>Available for freelance projects and full-time opportunities.</p>
+  <div class="contact-links">
+    <a href="mailto:bokamosoglen2@gmail.com" class="clink">✉ bokamosoglen2@gmail.com</a>
+    <a href="https://wa.me/27714662200" class="clink">💬 WhatsApp</a>
+    <a href="https://github.com/bokamosoglen" class="clink">🐙 GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <span>SecureShop — by <a href="#">Bokamoso Glen</a></span>
+  <span>Glen_Tech © 2026</span>
+</footer>
+</body>
+</html>

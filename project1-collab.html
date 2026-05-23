@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CollabEdit — Real-Time Collaboration App</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050a05;
+  --surface:#0a120a;
+  --surface2:#0f1f0f;
+  --green:#22c55e;
+  --green2:#4ade80;
+  --green3:#86efac;
+  --dim:#166534;
+  --text:#f0fdf4;
+  --muted:#6b7280;
+  --border:rgba(34,197,94,0.18);
+  --glow:rgba(34,197,94,0.12);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* scanline overlay */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:1000;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 3rem;background:rgba(5,10,5,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--green);letter-spacing:0.05em;}
+.nav-logo span{color:var(--muted);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--green);}
+.nav-badge{padding:0.3rem 0.9rem;border-radius:999px;background:rgba(34,197,94,0.1);border:1px solid var(--border);color:var(--green);font-size:0.78rem;font-family:'JetBrains Mono',monospace;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 3rem 4rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 40%,rgba(34,197,94,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:0.3;pointer-events:none;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--green);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;}
+.hero-label::before{content:'';width:30px;height:1px;background:var(--green);}
+.hero h1{font-size:clamp(3rem,8vw,6.5rem);font-weight:700;line-height:1.0;letter-spacing:-0.02em;margin-bottom:1.5rem;max-width:750px;}
+.hero h1 em{font-style:normal;color:var(--green);text-shadow:0 0 40px rgba(34,197,94,0.4);}
+.hero-desc{font-size:1.1rem;color:var(--muted);max-width:500px;line-height:1.8;font-weight:300;margin-bottom:2.5rem;}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-green{padding:0.9rem 2rem;border-radius:6px;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-weight:600;font-size:0.9rem;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:transform 0.2s,box-shadow 0.2s;}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(34,197,94,0.3);}
+.btn-outline{padding:0.9rem 2rem;border-radius:6px;border:1px solid var(--border);color:var(--green3);font-size:0.9rem;text-decoration:none;display:inline-block;transition:border-color 0.2s,background 0.2s;}
+.btn-outline:hover{border-color:var(--green);background:rgba(34,197,94,0.05);}
+
+/* LIVE DEMO MOCKUP */
+.demo-section{padding:5rem 3rem;background:var(--surface);}
+.demo-label{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--green);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2.5rem;text-align:center;}
+.editor-mockup{max-width:900px;margin:0 auto;border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(34,197,94,0.05);}
+.editor-bar{background:#0c1a0c;padding:0.85rem 1.25rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--border);}
+.editor-dots{display:flex;gap:0.45rem;}
+.dot{width:12px;height:12px;border-radius:50%;}
+.dot.red{background:#ff5f57;}
+.dot.yellow{background:#febc2e;}
+.dot.green{background:#28c840;}
+.editor-title{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--muted);flex:1;text-align:center;}
+.user-avatars{display:flex;gap:0.35rem;}
+.avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;border:2px solid var(--bg);}
+.av1{background:#22c55e;color:#000;}
+.av2{background:#f59e0b;color:#000;}
+.av3{background:#3b82f6;color:#fff;}
+.editor-body{display:grid;grid-template-columns:200px 1fr;min-height:350px;}
+.editor-sidebar{background:#080e08;border-right:1px solid var(--border);padding:1rem;}
+.sidebar-item{padding:0.5rem 0.75rem;border-radius:6px;font-size:0.8rem;color:var(--muted);cursor:pointer;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.5rem;}
+.sidebar-item.active{background:rgba(34,197,94,0.1);color:var(--green);}
+.sidebar-item::before{content:'📄';font-size:0.75rem;}
+.editor-content{padding:1.5rem;background:#0a120a;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.8;position:relative;}
+.cursor-green{display:inline-block;width:2px;height:1em;background:var(--green);animation:blink 1s infinite;vertical-align:text-bottom;margin-left:1px;}
+.cursor-amber{display:inline-block;width:2px;height:1em;background:#f59e0b;animation:blink 1.3s infinite;vertical-align:text-bottom;margin-left:1px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.line{margin-bottom:0.2rem;color:var(--text);}
+.line.comment{color:#4b6b4b;}
+.line.keyword{color:var(--green2);}
+.line.string{color:#fbbf24;}
+.highlight-green{background:rgba(34,197,94,0.15);border-radius:2px;padding:0 2px;}
+.user-label{font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:3px;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:0;}
+.ul-green{background:var(--green);color:#000;}
+.ul-amber{background:#f59e0b;color:#000;}
+
+/* FEATURES */
+.features{padding:5rem 3rem;}
+.section-header{text-align:center;margin-bottom:4rem;}
+.section-header h2{font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem;}
+.section-header p{color:var(--muted);font-size:1rem;max-width:500px;margin:0 auto;line-height:1.7;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:1000px;margin:0 auto;}
+.feature-card{padding:2rem;border-radius:12px;border:1px solid var(--border);background:var(--surface);transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s;position:relative;overflow:hidden;}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--green2));transform:scaleX(0);transform-origin:left;transition:transform 0.3s;}
+.feature-card:hover{transform:translateY(-4px);border-color:rgba(34,197,94,0.4);box-shadow:0 10px 30px rgba(34,197,94,0.08);}
+.feature-card:hover::before{transform:scaleX(1);}
+.feature-icon{font-size:2rem;margin-bottom:1rem;}
+.feature-card h3{font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--green3);}
+.feature-card p{font-size:0.88rem;color:var(--muted);line-height:1.6;}
+
+/* TECH STACK */
+.tech{padding:4rem 3rem;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.tech h3{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--green);letter-spacing:0.15em;text-transform:uppercase;text-align:center;margin-bottom:2rem;}
+.tech-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;}
+.tech-pill{padding:0.6rem 1.25rem;border-radius:999px;border:1px solid var(--border);background:rgba(34,197,94,0.06);color:var(--green3);font-size:0.85rem;font-family:'JetBrains Mono',monospace;transition:border-color 0.2s,background 0.2s;}
+.tech-pill:hover{border-color:var(--green);background:rgba(34,197,94,0.12);}
+
+/* CONTACT */
+.contact{padding:5rem 3rem;text-align:center;}
+.contact h2{font-size:2.5rem;font-weight:700;margin-bottom:1rem;}
+.contact p{color:var(--muted);margin-bottom:2rem;font-size:1rem;}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.contact-link{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);text-decoration:none;font-size:0.88rem;transition:color 0.2s,border-color 0.2s,box-shadow 0.2s;}
+.contact-link:hover{color:var(--green);border-color:var(--green);box-shadow:0 0 16px rgba(34,197,94,0.15);}
+
+footer{padding:2rem 3rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;color:var(--muted);}
+footer a{color:var(--green);text-decoration:none;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">collab<span>.</span>edit</div>
+  <ul class="nav-links">
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#tech">Stack</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-badge">v1.0 · Live</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-label">Project 01 — Real-Time Collaboration</div>
+  <h1>Edit Together,<br/><em>Instantly.</em></h1>
+  <p class="hero-desc">A Google Docs–style editor where multiple users edit text simultaneously with live cursors, conflict-free sync, and persistent storage.</p>
+  <div class="hero-actions">
+    <a href="#demo" class="btn-green">See Live Demo</a>
+    <a href="#tech" class="btn-outline">View Tech Stack</a>
+  </div>
+</section>
+
+<section class="demo-section" id="demo">
+  <div class="demo-label">// Live Editor Preview</div>
+  <div class="editor-mockup">
+    <div class="editor-bar">
+      <div class="editor-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+      <div class="editor-title">project-proposal.md — CollabEdit</div>
+      <div class="user-avatars">
+        <div class="avatar av1">BG</div>
+        <div class="avatar av2">JD</div>
+        <div class="avatar av3">AM</div>
+      </div>
+    </div>
+    <div class="editor-body">
+      <div class="editor-sidebar">
+        <div class="sidebar-item active">project-proposal</div>
+        <div class="sidebar-item">meeting-notes</div>
+        <div class="sidebar-item">roadmap</div>
+        <div class="sidebar-item">api-docs</div>
+      </div>
+      <div class="editor-content">
+        <div class="line comment"># Project Proposal — Q3 2026</div>
+        <div class="line">&nbsp;</div>
+        <div class="line"><span class="keyword">## Overview</span></div>
+        <div class="line">This platform enables <span class="highlight-green">real-time document collaboration</span></div>
+        <div class="line">with WebSocket-powered sync and conflict resolution.<span class="cursor-green"></span></div>
+        <div class="line">&nbsp;</div>
+        <div class="line"><span class="keyword">## Key Features</span></div>
+        <div class="line">- Live cursor tracking per user</div>
+        <div class="line">- <span class="user-label ul-amber">JD</span> Operational transformation for conflict-free edits<span class="cursor-amber"></span></div>
+        <div class="line">- Persistent NoSQL document storage</div>
+        <div class="line">- Role-based access: viewer / editor / admin</div>
+        <div class="line">&nbsp;</div>
+        <div class="line comment">## Tech Stack</div>
+        <div class="line"><span class="string">Frontend:</span> React + WebSocket client</div>
+        <div class="line"><span class="string">Backend:</span> Node.js + Socket.io + MongoDB</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-header">
+    <h2>Built for Real Teams</h2>
+    <p>Every feature designed around speed, reliability, and security.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Live Cursor Sync</h3>
+      <p>See every collaborator's cursor and selection in real-time. Color-coded per user for instant identification.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔀</div>
+      <h3>Conflict Resolution</h3>
+      <p>Operational transformation ensures edits from multiple users merge cleanly without data loss.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💾</div>
+      <h3>Auto-Save & History</h3>
+      <p>Documents save automatically. Full revision history lets you roll back to any version.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>JWT Authentication</h3>
+      <p>Secure token-based auth with role permissions: viewer, editor, and document owner.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📡</div>
+      <h3>WebSocket Backbone</h3>
+      <p>Persistent connections deliver sub-100ms latency for a seamless editing experience.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3>Horizontally Scalable</h3>
+      <p>Redis pub/sub bridges multiple server instances so the system scales with your team.</p>
+    </div>
+  </div>
+</section>
+
+<section class="tech" id="tech">
+  <h3>// Tech Stack</h3>
+  <div class="tech-grid">
+    <div class="tech-pill">React</div>
+    <div class="tech-pill">WebSockets</div>
+    <div class="tech-pill">Socket.io</div>
+    <div class="tech-pill">Node.js</div>
+    <div class="tech-pill">MongoDB</div>
+    <div class="tech-pill">Redis</div>
+    <div class="tech-pill">JWT Auth</div>
+    <div class="tech-pill">Docker</div>
+    <div class="tech-pill">CI/CD</div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <h2>Interested in this project?</h2>
+  <p>Reach out to Bokamoso Glen — available for freelance and collaboration.</p>
+  <div class="contact-links">
+    <a href="mailto:bokamosoglen2@gmail.com" class="contact-link">✉ bokamosoglen2@gmail.com</a>
+    <a href="https://wa.me/27714662200" class="contact-link">💬 WhatsApp</a>
+    <a href="https://github.com/bokamosoglen" class="contact-link">🐙 GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <span>CollabEdit — by <a href="#">Bokamoso Glen</a></span>
+  <span>Glen_Tech © 2026</span>
+</footer>
+</body>
+</html>

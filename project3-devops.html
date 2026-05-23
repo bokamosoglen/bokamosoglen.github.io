@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DevPulse — DevOps Monitoring Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#020602;
+  --surface:#050f05;
+  --surface2:#081208;
+  --green:#15803d;
+  --green2:#22c55e;
+  --green3:#4ade80;
+  --green4:#86efac;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --text:#f0fdf4;
+  --muted:#6b7280;
+  --border:rgba(34,197,94,0.15);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(34,197,94,0.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 3rem;background:rgba(2,6,2,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-brand{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:600;color:var(--green3);letter-spacing:0.03em;}
+.nav-brand span{color:var(--muted);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.82rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--green3);}
+.nav-status{display:flex;align-items:center;gap:0.5rem;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--green3);}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green3);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 3rem 4rem;position:relative;z-index:1;}
+.hero-tag{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--green2);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;}
+.hero-tag::before{content:'$';color:var(--green3);}
+.hero h1{font-size:clamp(3rem,8vw,6rem);font-weight:700;line-height:1.0;letter-spacing:-0.03em;margin-bottom:1.5rem;max-width:800px;}
+.hero h1 .g{color:var(--green3);text-shadow:0 0 30px rgba(74,222,128,0.3);}
+.hero-desc{font-size:1.05rem;color:var(--muted);max-width:520px;line-height:1.8;font-weight:300;margin-bottom:2.5rem;}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-g{padding:0.85rem 2rem;border-radius:4px;background:linear-gradient(135deg,var(--green),var(--green3));color:#000;font-weight:600;font-size:0.9rem;border:none;cursor:pointer;text-decoration:none;display:inline-block;font-family:'IBM Plex Sans',sans-serif;transition:transform 0.2s,box-shadow 0.2s;}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(34,197,94,0.3);}
+.btn-o{padding:0.85rem 2rem;border-radius:4px;border:1px solid var(--border);color:var(--green4);font-size:0.9rem;font-weight:500;text-decoration:none;display:inline-block;transition:border-color 0.2s,background 0.2s;}
+.btn-o:hover{border-color:var(--green2);background:rgba(34,197,94,0.05);}
+
+/* DASHBOARD MOCKUP */
+.dashboard-section{padding:3rem 3rem 5rem;position:relative;z-index:1;}
+.section-mono{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--green2);letter-spacing:0.12em;text-transform:uppercase;text-align:center;margin-bottom:2rem;}
+.dashboard{max-width:1000px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.6);}
+.dash-bar{background:#030903;padding:0.8rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.dash-dots{display:flex;gap:0.4rem;}
+.dd{width:11px;height:11px;border-radius:50%;}
+.dd.r{background:#ff5f57;}.dd.y{background:#febc2e;}.dd.gr{background:#28c840;}
+.dash-title{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--muted);}
+.dash-time{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--green2);}
+.dash-body{display:grid;grid-template-columns:180px 1fr;min-height:400px;}
+.dash-sidebar{background:#030703;border-right:1px solid var(--border);padding:1rem 0;}
+.dash-menu-item{padding:0.6rem 1rem;font-size:0.78rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:0.5rem;transition:background 0.2s,color 0.2s;}
+.dash-menu-item.active{background:rgba(34,197,94,0.1);color:var(--green3);border-right:2px solid var(--green3);}
+.dash-menu-item:hover:not(.active){background:rgba(34,197,94,0.05);color:var(--green4);}
+.dash-main{padding:1.25rem;display:flex;flex-direction:column;gap:1rem;}
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;}
+.metric{background:#030903;border:1px solid var(--border);border-radius:6px;padding:0.8rem;}
+.metric-label{font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;}
+.metric-value{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600;}
+.metric-value.green{color:var(--green3);}
+.metric-value.amber{color:var(--amber);}
+.metric-value.red{color:var(--red);}
+.metric-delta{font-size:0.65rem;color:var(--muted);margin-top:0.2rem;}
+.chart-area{background:#030903;border:1px solid var(--border);border-radius:6px;padding:1rem;}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;}
+.chart-title{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--green2);}
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:80px;}
+.bar{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--green3),var(--green));opacity:0.8;transition:opacity 0.2s;}
+.bar:hover{opacity:1;}
+.bar.low{background:linear-gradient(180deg,var(--amber),#92400e);}
+.deploy-list{background:#030903;border:1px solid var(--border);border-radius:6px;padding:1rem;}
+.deploy-header{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--green2);margin-bottom:0.75rem;}
+.deploy-item{display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0;border-bottom:1px solid rgba(34,197,94,0.06);font-size:0.75rem;}
+.deploy-item:last-child{border-bottom:none;}
+.deploy-status{width:8px;height:8px;border-radius:50%;}
+.ds-green{background:var(--green3);}
+.ds-amber{background:var(--amber);}
+.ds-red{background:var(--red);}
+.deploy-name{color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;flex:1;}
+.deploy-branch{color:var(--muted);font-size:0.68rem;}
+.deploy-time{color:var(--muted);font-size:0.68rem;font-family:'IBM Plex Mono',monospace;}
+
+/* FEATURES */
+.features{padding:5rem 3rem;background:var(--surface);border-top:1px solid var(--border);position:relative;z-index:1;}
+.features h2{font-size:clamp(2rem,4vw,2.8rem);font-weight:700;letter-spacing:-0.02em;text-align:center;margin-bottom:0.75rem;}
+.features-sub{text-align:center;color:var(--muted);font-size:0.95rem;margin-bottom:3rem;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;max-width:1000px;margin:0 auto;}
+.feat{padding:1.75rem;border:1px solid var(--border);border-radius:8px;background:#030703;transition:border-color 0.25s,transform 0.25s;}
+.feat:hover{border-color:rgba(34,197,94,0.4);transform:translateY(-3px);}
+.feat-icon{font-size:1.75rem;margin-bottom:0.75rem;}
+.feat h3{font-size:0.95rem;font-weight:600;color:var(--green4);margin-bottom:0.4rem;}
+.feat p{font-size:0.83rem;color:var(--muted);line-height:1.6;}
+
+/* TECH */
+.tech{padding:4rem 3rem;border-top:1px solid var(--border);position:relative;z-index:1;}
+.tech-label{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--green2);letter-spacing:0.15em;text-transform:uppercase;text-align:center;margin-bottom:2rem;}
+.tech-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:0.75rem;}
+.tp{padding:0.5rem 1.1rem;border:1px solid var(--border);border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--green4);background:rgba(34,197,94,0.04);transition:border-color 0.2s,background 0.2s;}
+.tp:hover{border-color:var(--green2);background:rgba(34,197,94,0.1);}
+
+/* CONTACT */
+.contact{padding:5rem 3rem;text-align:center;background:var(--surface);border-top:1px solid var(--border);position:relative;z-index:1;}
+.contact h2{font-size:2.5rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem;}
+.contact p{color:var(--muted);margin-bottom:2rem;}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.cl{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;border-radius:4px;border:1px solid var(--border);color:var(--muted);text-decoration:none;font-size:0.85rem;font-weight:500;transition:color 0.2s,border-color 0.2s,box-shadow 0.2s;}
+.cl:hover{color:var(--green3);border-color:var(--green2);box-shadow:0 0 14px rgba(34,197,94,0.12);}
+
+footer{padding:1.75rem 3rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--muted);position:relative;z-index:1;}
+footer a{color:var(--green3);text-decoration:none;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">dev<span>.</span>pulse</div>
+  <ul class="nav-links">
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#tech">Stack</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status"><div class="status-dot"></div> All Systems Operational</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">Project 03 — DevOps Monitoring Tool</div>
+  <h1>Deploy.<br/>Monitor.<br/><span class="g">Repeat.</span></h1>
+  <p class="hero-desc">A real-time DevOps dashboard that tracks deployments, monitors system health, and visualizes logs and errors — built with React, Java/Kotlin, and CI/CD pipelines.</p>
+  <div class="hero-actions">
+    <a href="#dashboard" class="btn-g">View Dashboard</a>
+    <a href="#features" class="btn-o">See Features</a>
+  </div>
+</section>
+
+<section class="dashboard-section" id="dashboard">
+  <div class="section-mono">// Live Dashboard Preview</div>
+  <div class="dashboard">
+    <div class="dash-bar">
+      <div class="dash-dots"><div class="dd r"></div><div class="dd y"></div><div class="dd gr"></div></div>
+      <div class="dash-title">DevPulse — Production Environment</div>
+      <div class="dash-time">Live · 14:32:07 SAST</div>
+    </div>
+    <div class="dash-body">
+      <div class="dash-sidebar">
+        <div class="dash-menu-item active">📊 Overview</div>
+        <div class="dash-menu-item">🚀 Deployments</div>
+        <div class="dash-menu-item">🖥️ System Health</div>
+        <div class="dash-menu-item">📋 Logs</div>
+        <div class="dash-menu-item">🔔 Alerts</div>
+        <div class="dash-menu-item">⚙️ Settings</div>
+      </div>
+      <div class="dash-main">
+        <div class="metric-row">
+          <div class="metric"><div class="metric-label">Uptime</div><div class="metric-value green">99.97%</div><div class="metric-delta">↑ Last 30 days</div></div>
+          <div class="metric"><div class="metric-label">CPU Usage</div><div class="metric-value amber">67%</div><div class="metric-delta">↑ +12% vs avg</div></div>
+          <div class="metric"><div class="metric-label">Deploys Today</div><div class="metric-value green">8</div><div class="metric-delta">✓ All passed</div></div>
+          <div class="metric"><div class="metric-label">Active Errors</div><div class="metric-value red">2</div><div class="metric-delta">↓ Down from 5</div></div>
+        </div>
+        <div class="chart-area">
+          <div class="chart-header"><div class="chart-title">// API Response Time (ms) — Last 24h</div></div>
+          <div class="chart-bars">
+            <div class="bar" style="height:45%"></div><div class="bar" style="height:60%"></div><div class="bar" style="height:40%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:55%"></div><div class="bar low" style="height:90%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:45%"></div><div class="bar" style="height:70%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:48%"></div><div class="bar" style="height:62%"></div><div class="bar" style="height:43%"></div><div class="bar" style="height:57%"></div><div class="bar" style="height:50%"></div>
+          </div>
+        </div>
+        <div class="deploy-list">
+          <div class="deploy-header">// Recent Deployments</div>
+          <div class="deploy-item"><div class="deploy-status ds-green"></div><div class="deploy-name">api-service v2.4.1</div><div class="deploy-branch">main</div><div class="deploy-time">2 min ago</div></div>
+          <div class="deploy-item"><div class="deploy-status ds-green"></div><div class="deploy-name">frontend-app v3.1.0</div><div class="deploy-branch">release/3.1</div><div class="deploy-time">18 min ago</div></div>
+          <div class="deploy-item"><div class="deploy-status ds-amber"></div><div class="deploy-name">worker-service v1.8.3</div><div class="deploy-branch">hotfix/queue</div><div class="deploy-time">1 hr ago</div></div>
+          <div class="deploy-item"><div class="deploy-status ds-red"></div><div class="deploy-name">db-migration v0.9.2</div><div class="deploy-branch">dev</div><div class="deploy-time">3 hr ago</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <h2>Observability at a Glance</h2>
+  <p class="features-sub">Everything you need to keep your systems healthy and deployments smooth.</p>
+  <div class="features-grid">
+    <div class="feat"><div class="feat-icon">📡</div><h3>Real-Time Updates</h3><p>WebSocket-powered metrics refresh every second — no page reload needed.</p></div>
+    <div class="feat"><div class="feat-icon">🚀</div><h3>Deployment Tracking</h3><p>Full pipeline visibility: trigger, build, test, deploy. Track every commit to production.</p></div>
+    <div class="feat"><div class="feat-icon">🔔</div><h3>Smart Alerting</h3><p>Threshold-based alerts sent via email, WhatsApp, or webhook when metrics degrade.</p></div>
+    <div class="feat"><div class="feat-icon">📋</div><h3>Log Aggregation</h3><p>Stream and search logs from all services in one view. Filter by level, service, or time.</p></div>
+    <div class="feat"><div class="feat-icon">🔒</div><h3>Secure Auth</h3><p>JWT-based authentication with role separation: admin, developer, and viewer roles.</p></div>
+    <div class="feat"><div class="feat-icon">🔁</div><h3>CI/CD Integration</h3><p>Native hooks for GitHub Actions, Jenkins, and GitLab CI — deploy with confidence.</p></div>
+  </div>
+</section>
+
+<section class="tech" id="tech">
+  <div class="tech-label">// Technology Stack</div>
+  <div class="tech-pills">
+    <div class="tp">React</div><div class="tp">Java / Spring Boot</div><div class="tp">Kotlin</div><div class="tp">WebSockets</div><div class="tp">REST APIs</div><div class="tp">MySQL</div><div class="tp">JWT Auth</div><div class="tp">Docker</div><div class="tp">GitHub Actions</div><div class="tp">Prometheus</div><div class="tp">CI/CD Pipelines</div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <h2>Get In Touch</h2>
+  <p>Available for freelance and full-time work — let's build something great.</p>
+  <div class="contact-links">
+    <a href="mailto:bokamosoglen2@gmail.com" class="cl">✉ bokamosoglen2@gmail.com</a>
+    <a href="https://wa.me/27714662200" class="cl">💬 WhatsApp</a>
+    <a href="https://github.com/bokamosoglen" class="cl">🐙 GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <span>DevPulse — by <a href="#">Bokamoso Glen</a></span>
+  <span>Glen_Tech © 2026</span>
+</footer>
+</body>
+</html>
